@@ -7,12 +7,15 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PWD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - botnet
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   bot:
-    build: ./bot
+    image: adsr-jam-bot:latest
     environment:
       - PYTHONUNBUFFERED=1
       - API_TOKEN=${API_TOKEN}
@@ -22,10 +25,13 @@ services:
       - mysql
     networks:
       - botnet
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
 
 volumes:
   mysql_data:
 
 networks:
   botnet:
-

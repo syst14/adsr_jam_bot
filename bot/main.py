@@ -166,11 +166,27 @@ def send_jam_reminders(message):
     tz = pytz.timezone(TIMEZONE)
     today = datetime.now(tz).date()
 
-    cursor.execute("SELECT * FROM jams WHERE DATE(jam_date) = %s", (today,))
+    chat_id = message.chat.id if message else None
+
+    # Prepare SQL and params depending on whether chat_id is provided
+    if chat_id:
+        cursor.execute(
+            "SELECT * FROM jams WHERE DATE(jam_date) = %s AND chat_id = %s",
+            (today, chat_id)
+        )
+    else:
+        cursor.execute(
+            "SELECT * FROM jams WHERE DATE(jam_date) = %s",
+            (today,)
+        )
+
     jams_today = cursor.fetchall()
 
     if not jams_today:
-        bot.reply_to(message, "No jams scheduled for today 🎧")
+        if chat_id:
+            bot.send_message(chat_id, "No jams scheduled for today 🎧")
+        elif message:
+            bot.reply_to(message, "No jams scheduled for today 🎧")
         return
 
     for jam in jams_today:
@@ -187,7 +203,7 @@ def send_jam_reminders(message):
         if mentions:
             text = "🎶 *Нагадування про Джем сьогодні!* 🎶\n\n" + "\n".join(mentions)
         else:
-            text = "Сьогодні немає участників на джем ❌"
+            text = "Сьогодні немає учасників на джем ❌"
 
         bot.send_message(
             chat_id,
@@ -320,7 +336,7 @@ def jam_scheduler():
         now = datetime.now(tz)
         if now.weekday() == 0:
             if now.hour == 21 and now.minute == 00 and not has_run_today:
-                chat_id = -4869311671  # your group chat ID
+                chat_id = -1002475087854  # your group chat ID
                 user_id = 'scheduler'  # fake user/admin ID
                 jam_input_time = "Wednesday 20:00"
 
@@ -336,7 +352,7 @@ def jam_scheduler():
                 has_run_today = True
         elif now.weekday() == 5:
             if now.hour == 11 and now.minute == 00 and not has_run_today:
-                chat_id = -4869311671  # your group chat ID
+                chat_id = -1002475087854  # your group chat ID
                 user_id = 'scheduler'  # fake user/admin ID
                 jam_input_time = "Sunday 16:00"
 
@@ -361,7 +377,7 @@ def jam_reminder():
         now = datetime.now(tz)
         if now.weekday() == 2 or now.weekday() == 6:
             if now.hour == 12 and now.minute == 00 and not has_run_today:
-                chat_id = -4869311671  # your group chat ID
+                chat_id = -1002475087854  # your group chat ID
                 user_id = 'scheduler'  # fake user/admin ID
                 send_jam_reminders({})
                 has_run_today = True

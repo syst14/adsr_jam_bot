@@ -1,0 +1,4 @@
+telebot==0.0.5
+mysql-connector-python==9.3.0
+dateparser==1.2.1
+pytz==2025.2

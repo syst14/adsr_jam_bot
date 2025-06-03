@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PWD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - botnet
+
+  bot:
+    build: ./bot
+    environment:
+      - PYTHONUNBUFFERED=1
+      - API_TOKEN=${API_TOKEN}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    networks:
+      - botnet
+
+volumes:
+  mysql_data:
+
+networks:
+  botnet:

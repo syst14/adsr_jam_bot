@@ -9,8 +9,10 @@ docker compose down -v to delete
 
 swarm:
 
+set -o allexport && source .env && set +o allexport
+
 docker build -t adsr-jam-bot ./bot
-docker stack deploy -c docker-compose.yml adsrjam
+docker stack deploy -c swarm-compose.yml adsrjam
 
 
 -4869311671: test chat_id

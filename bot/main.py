@@ -318,11 +318,27 @@ def jam_scheduler():
     has_run_today = False
     while True:
         now = datetime.now(tz)
-        if now.weekday() == 1:
-            if now.hour == 15 and now.minute == 25 and not has_run_today:
+        if now.weekday() == 0:
+            if now.hour == 21 and now.minute == 00 and not has_run_today:
                 chat_id = -4869311671  # your group chat ID
                 user_id = 'scheduler'  # fake user/admin ID
-                jam_input_time = "today 20:00"
+                jam_input_time = "Wednesday 20:00"
+
+                # ✅ Simulate a message object
+                fake_message = SimpleNamespace(
+                    chat=SimpleNamespace(id=chat_id),
+                    from_user=SimpleNamespace(id=user_id, username="scheduler"),
+                    text=f"/jam {jam_input_time}",
+                    message_id=0
+                )
+
+                handle_jam_command(fake_message)
+                has_run_today = True
+        elif now.weekday() == 5:
+            if now.hour == 11 and now.minute == 00 and not has_run_today:
+                chat_id = -4869311671  # your group chat ID
+                user_id = 'scheduler'  # fake user/admin ID
+                jam_input_time = "Sunday 16:00"
 
                 # ✅ Simulate a message object
                 fake_message = SimpleNamespace(
@@ -343,8 +359,8 @@ def jam_reminder():
     has_run_today = False
     while True:
         now = datetime.now(tz)
-        if now.weekday() == 1:
-            if now.hour == 15 and now.minute == 32 and not has_run_today:
+        if now.weekday() == 2 or now.weekday() == 6:
+            if now.hour == 12 and now.minute == 00 and not has_run_today:
                 chat_id = -4869311671  # your group chat ID
                 user_id = 'scheduler'  # fake user/admin ID
                 send_jam_reminders({})
